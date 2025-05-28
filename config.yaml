@@ -1,0 +1,22 @@
+data:
+  raw_path: "data/raw"
+  processed_path: "data/processed"
+  features_path: "data/processed/features"
+  targets_path: "data/processed/targets"
+  
+models:
+  base_path: "models"
+  registry: "models/model_registry.csv"
+  current_model: "random_forest"
+  
+logs:
+  log_dir: "logs"
+  
+training:
+  horizon: "next_day"  # Options: next_day, 3day, weekly
+  broker_mode: "relative"  # Options: relative, absolute
+  training_window: "all"  # Options: all, or integer (e.g., 365)
+  test_size: 0.2
+  random_state: 42
+  threshold_buy: 0.01
+  threshold_sell: -0.01

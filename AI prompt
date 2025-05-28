@@ -1,0 +1,112 @@
+
+Thanks! Here's your finalized and fully structured project specification, reflecting everything you've shared:
+
+📈 NEPSE Forecasting Assistant — Classic Machine Learning (Desktop Version)
+
+Goal
+
+Build a reliable, modular ML-based assistant to predict NEPSE short-term trading signals (Buy / Hold / Sell) using daily floor sheet data and broker behavior, optimized for breakout identification and market momentum forecasting.
+
+System Features
+
+Input Data
+
+Source: Multiple CSV files named as `floor_sheet_data_YYYY-MM-DD.csv`
+Fields:
+  `SN, ContractNo, Symbol, Buyer, Seller, Quantity, Rate, Amount`
+Broker Codes: Numeric values (e.g., 1–58)
+Symbols: Stock tickers (e.g., HIDCLP, RSDC)
+
+Feature Engineering
+Technical Indicators:
+5-day Moving Average
+14-day RSI
+Volatility measures (rolling std)
+
+Broker Behavior:
+	Net Buy/Sell Strength
+	Relative vs. Absolute metrics (user-selectable)
+	Broker concentration
+
+Modeling
+
+Initial Model: Random Forest Classifier
+Targets: Buy / Hold / Sell
+Prediction Horizons(user-selectable):
+
+  Next Day
+  3-Day Return
+  Weekly Return
+
+Incremental Training
+
+Training Frequency: Daily
+Training Window Options:
+
+  All Historical Data
+  Rolling Window
+
+Model Management
+
+Save model checkpoints per date
+ Log and store:
+
+  Model version
+  Training time
+  Evaluation metrics (Accuracy, Precision, Recall, F1, Confusion Matrix)
+Export evaluation results to CSV/JSON
+
+Project Architecture
+
+
+nepse_forecast_ClassicML/
+│
+├── src/
+│   ├── data/              # Load, preprocess, and manage floor sheet data
+│   ├── features/          # Feature engineering: indicators, broker behavior
+│   ├── models/            # Train/test models, save checkpoints
+│   ├── utils/             # Shared utilities, logger, config, etc.
+│   ├── pipeline.py        # Main training pipeline script
+│
+├── app/
+│   └── streamlit_app.py   # Interactive dashboard with options for prediction horizon, feature mode
+│
+├── logs/                  # Training and error logs
+├── checkpoints/           # Saved model states per day
+├── metrics/               # CSV/JSON files storing evaluation metrics
+└── requirements.txt       # Dependencies`
+
+Output
+
+ Interactive Streamlit app with:
+
+   Stock filter
+   Prediction horizon selector
+   Broker feature type (Relative/Absolute)
+   Signal output (Buy / Hold / Sell)
+   Visualized metrics and latest signal summary
+
+Logging
+
+Daily logs:
+
+ Model version
+ Training duration
+ Evaluation results
+ Errors or warnings
+
+---
+
+## ✅ Next Steps
+
+I'll now help you build this piece-by-piece. Let's begin with:
+
+Step 1: Folder & File Structure + Logger Setup
+
+Would you like me to:
+
+1. Generate the base folder layout and boilerplate files (empty functions/modules)?
+2. Set up the logging utility?
+3. Build a minimal data loader for `floor_sheet_data_*.csv` to start feature engineering?
+
+Let me know which part you want to start with, or if you'd like all three in one go.

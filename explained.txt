@@ -1,5 +1,25 @@
 
-datadownloader / download_drive_files               OUTPUT              data / raw / floor_sheet_data_2025-*.csv
-scripts / ingest_daily_csv.py                       OUTPUT              data / processed / clean_sheet_data_2025-*.csv
-core / featured_engieering.py                       OUTPUT              data / indicators / indicators_2025-*.csv
+python -m datadownloader / download_drive_files               OUTPUT              data / raw / floor_sheet_data_2025-*.csv
+python -m scripts / ingest_daily_csv.py                       OUTPUT              data / processed / clean_sheet_data_2025-*.csv
+python -m core / featured_engieering.py                       OUTPUT              data / indicators / indicators_2025-*.csv
+python -m scripts.build_dataset                               OUTPUT              data / training_data / training_dataset.csv
 
+
+
+
+
+
+
+	Steps	 What Happens                                                   	 File(s) Involved                                           	 Data Type                            	
+	 ------------------------------------------------------------------------- 	 -------------------------------------------------------------- 	 ---------------------------------------------------------- 	 -----------------------------------  	
+ ✅ 1. Download raw data	 Downloads untouched NEPSE CSVs from Google Drive.              	 `datadownloder/download_drive_files.py`                    	 ➤ `data/raw/*.csv`                 	Done
+ 🧼 2. Clean & preprocess raw data ⟵ (Data Cleaning happens here!)	 Filters, fills NaNs, standardizes columns, removes duplicates. 	 `scripts/ingest_daily_csv.py`, maybe `merge_raw_trades.py` 	 ➤ `data/processed/*.csv`          	Done
+ 🔧 3. Generate indicators	 Adds RSI, MA, VWAP, volatility, etc. using TA-Lib.             	 `core/feature_engineering.py`                              	 ➤ `data/processed/indicators_*.csv` 	
+ 🏷  4. Build training dataset	 Combines features + labeled targets.                           	 `scripts/build_dataset.py`                                 	 ➤ `model/training_data/*.csv`      	
+
+ 🤖 5. Train or fine-tune model	 Trains model on cleaned, labeled data.                         	 `model/fine_tune.py`                                       	 ➤ `model/checkpoints/`              	
+ 📈 6. Generate forecast	 Predicts next day's price/volume/etc.                          	 `core/forecasting.py`                                      	 ➤ `data/predictions/*.json`         	
+ 📊 7. Analyze broker behavior	 Aggregates and ranks brokers by action.                        	 `core/broker_analysis.py`                                  	 ➤ dashboard data                    	
+ 🚦 8. Generate signals	 Combines technical + broker behavior → Buy/Sell/Hold           	 `core/recommend.py`                                        	 ➤ table/chart output                	
+ 📉 9. Compare with actual	 Evaluates forecast vs real values.                             	 `core/evaluator.py`                                        	 ➤ feedback logs                     	
+ 🔁 10. Retrain model with feedback	 Improves model using new actuals.                              	 `model/retrain.py`                                         	 ➤ updated model                     	
