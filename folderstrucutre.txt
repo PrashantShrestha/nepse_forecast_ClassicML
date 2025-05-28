@@ -1,0 +1,28 @@
+Nepse_FORECAST_CLASSICML/
+├──data/                               
+│   ├── processed/                      				# Filters, fills NaNs, standardizes columns, removes duplicates. 
+│   │   ├── clean_sheet_data_2025-05-05.csv
+│   │   ├── clean_sheet_data_2025-05-06.csv
+│   │   ├── clean_sheet_data_2025-05-07.csv
+│   │   └── ...
+│   │ 
+│   ├── raw/                            				# Raw NEPSE CSVs (as-is)
+│   │   ├── floor_sheet_data_2025-05-05.csv
+│   │   ├── floor_sheet_data_2025-05-06.csv
+│   │   ├── floor_sheet_data_2025-05-07.csv
+│   │   └── ...
+│   └── __init__.py
+│
+├── datadownloder/                      				# Data downloader form google drive								
+│   ├── __init__.py
+│   ├── authenticate.py                 				# authenticate google drive									✅ Done
+│   ├── download_drive_files.py         				# Download Raw data from the drive 							✅ Done
+│   └── service_account.json            				# Secrete Key												✅ Done
+│
+├── scripts/                            
+│   ├── __init__.py
+│   └──  ingest_daily_csv.py            
+│
+├── explained
+├── folderstrucutre
+└── README.txt					                        # 📘 Overview, usage, and instructions
