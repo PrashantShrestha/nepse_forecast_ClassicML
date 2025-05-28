@@ -62,11 +62,3 @@ for raw_file in sorted(raw_dir.glob("floor_sheet_data_*.csv")):
     except Exception as e:
         print(f"❌ Error processing '{raw_file.name}': {e}")
 
-# After all files processed, combine into one CSV
-if all_cleaned_dfs:
-    combined_df = pd.concat(all_cleaned_dfs, ignore_index=True)
-    combined_file = processed_dir / "clean_sheet_data_combined.csv"
-    combined_df.to_csv(combined_file, index=False)
-    print(f"📦 Combined cleaned data saved as '{combined_file.name}'")
-else:
-    print("⚠️ No cleaned files found to combine.")

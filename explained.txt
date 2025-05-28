@@ -1,2 +1,5 @@
 
-data_editing / ingest_daily_csv.py  = This script reads raw daily files and prepares them for analysis."
+datadownloader / download_drive_files               OUTPUT              data / raw / floor_sheet_data_2025-*.csv
+scripts / ingest_daily_csv.py                       OUTPUT              data / processed / clean_sheet_data_2025-*.csv
+core / featured_engieering.py                       OUTPUT              data / indicators / indicators_2025-*.csv
+
