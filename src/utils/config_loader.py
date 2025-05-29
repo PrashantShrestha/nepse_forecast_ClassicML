@@ -1,8 +1,8 @@
+# src/utils/config_loader.py
 import yaml
 import os
 
 def load_config():
-    # Get the base directory of the project
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     config_path = os.path.join(base_dir, 'config.yaml')
     

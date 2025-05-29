@@ -1,93 +1,34 @@
 import logging
 import os
-import pandas as pd
-import json
-from datetime import datetime
-from src.utils.config_loader import load_config
-# src/utils/logger.py
-import logging
-import os
-from src.utils.config_loader import load_config
+import sys
 
-config = load_config()
-
-def setup_logger(name, log_file, level=logging.INFO):
-    """Create and configure logger"""
-    log_path = os.path.join(config['logs']['log_dir'], log_file)
+def get_logger(name, log_dir="logs"):
+    """
+    Creates and configures a logger
+    """
+    # Create log directory if not exists
+    os.makedirs(log_dir, exist_ok=True)
     
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
-    handler = logging.FileHandler(log_path)
-    handler.setFormatter(formatter)
-    
+    # Create logger
     logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    
+    # Create file handler
+    log_file = os.path.join(log_dir, f"{name}.log")
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(logging.INFO)
+    
+    # Create console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+    
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+    
+    # Add handlers to logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
     
     return logger
-
-def log_evaluation(date, metrics, horizon):
-    """Log evaluation results to CSV and JSON"""
-    # Add metadata to metrics
-    metrics['date'] = date
-    metrics['horizon'] = horizon
-    metrics['timestamp'] = datetime.now().isoformat()
-    
-    # CSV logging
-    csv_path = os.path.join(config['logs']['log_dir'], "evaluation_history.csv")
-    try:
-        history = pd.read_csv(csv_path)
-        history = pd.concat([history, pd.DataFrame([metrics])], ignore_index=True)
-    except FileNotFoundError:
-        history = pd.DataFrame([metrics])
-    
-    history.to_csv(csv_path, index=False)
-    
-    # JSON logging
-    json_path = os.path.join(config['logs']['log_dir'], f"evaluation_{date}.json")
-    with open(json_path, 'w') as f:
-        json.dump(metrics, f, indent=2)
-    
-    return history
-
-
-# config = load_config()
-
-# def setup_logger(name, log_file, level=logging.INFO):
-#     """Create and configure logger"""
-#     log_path = os.path.join(config['logs']['log_dir'], log_file)
-    
-#     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
-#     handler = logging.FileHandler(log_path)
-#     handler.setFormatter(formatter)
-    
-#     logger = logging.getLogger(name)
-#     logger.setLevel(level)
-#     logger.addHandler(handler)
-    
-#     return logger
-
-# def log_evaluation(date, metrics, horizon):
-#     """Log evaluation results to CSV and JSON"""
-#     # Add metadata to metrics
-#     metrics['date'] = date
-#     metrics['horizon'] = horizon
-#     metrics['timestamp'] = datetime.now().isoformat()
-    
-#     # CSV logging
-#     csv_path = os.path.join(config['logs']['log_dir'], "evaluation_history.csv")
-#     try:
-#         history = pd.read_csv(csv_path)
-#         history = pd.concat([history, pd.DataFrame([metrics])], ignore_index=True)
-#     except FileNotFoundError:
-#         history = pd.DataFrame([metrics])
-    
-#     history.to_csv(csv_path, index=False)
-    
-#     # JSON logging
-#     json_path = os.path.join(config['logs']['log_dir'], f"evaluation_{date}.json")
-#     with open(json_path, 'w') as f:
-#         json.dump(metrics, f, indent=2)
-    
-#     return history

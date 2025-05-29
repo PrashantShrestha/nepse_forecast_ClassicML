@@ -38,8 +38,13 @@ def calculate_technical_features(df):
         avg_gain = gain.rolling(window, min_periods=1).mean()
         avg_loss = loss.rolling(window, min_periods=1).mean()
         
-        rs = avg_gain / (avg_loss + 1e-6)
-        return 100 - (100 / (1 + rs))
+        # Handle division by zero
+        with np.errstate(divide='ignore'):
+            rs = avg_gain / avg_loss
+            rsi = 100 - (100 / (1 + rs))
+
+        rsi.replace([np.inf, -np.inf], 100 if avg_loss == 0 else 0, inplace=True)
+        return rsi
     
     # Calculate features
     daily_summary['5d_ma'] = daily_summary.groupby('Symbol')['Close'].transform(compute_ma)

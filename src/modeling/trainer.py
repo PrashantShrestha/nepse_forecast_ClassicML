@@ -1,3 +1,4 @@
+# src/modeling/trainer.py
 import joblib
 import pandas as pd
 import numpy as np
@@ -7,11 +8,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from src.utils.config_loader import load_config
-from src.utils.data_manager import save_features, load_features, save_model
+from src.utils.data_manager import save_features, save_targets, save_model
 from src.utils.logger import get_logger
 
 config = load_config()
-logger = get_logger('trainer')
+logger = get_logger('trainer', config['logs']['log_dir'])
 
 class IncrementalTrainer:
     def __init__(self):
@@ -45,17 +46,8 @@ class IncrementalTrainer:
             )
             logger.info("Initialized new Random Forest model")
     
-    def prepare_data(self):
+    def prepare_data(self, tech_features, broker_features, targets):
         """Prepare training and test data"""
-        # Load features
-        tech_features = load_features('technical')
-        broker_features = load_features(f"broker_{config['training']['broker_mode']}")
-        targets = load_features('targets')
-        
-        if tech_features.empty or broker_features.empty or targets.empty:
-            logger.error("Missing features or targets for training")
-            return None, None, None, None
-        
         # Merge datasets
         features = pd.merge(tech_features, broker_features, on=['Date', 'Symbol'])
         full_data = pd.merge(features, targets, on=['Date', 'Symbol'])
@@ -85,12 +77,13 @@ class IncrementalTrainer:
             shuffle=False
         )
     
-    def train(self):
+    def train(self, tech_features, broker_features, targets):
         """Train the model incrementally"""
-        X_train, X_test, y_train, y_test = self.prepare_data()
+        X_train, X_test, y_train, y_test = self.prepare_data(tech_features, broker_features, targets)
         
-        if X_train is None:
-            return None, None
+        if X_train is None or X_train.empty:
+            logger.error("No training data available")
+            return None, None, None
         
         # Incremental training
         start_time = time.time()
@@ -111,26 +104,3 @@ class IncrementalTrainer:
         logger.info(f"Model saved to {self.model_path}")
         
         return X_test, y_test, training_duration
-    
-    def save_model_version(self, metrics):
-        """Save versioned model with metadata"""
-        horizon = config['training']['horizon']
-        model_dir = os.path.join(
-            config['models']['base_path'], 
-            'random_forest', 
-            horizon
-        )
-        date_str = pd.Timestamp.now().strftime('%Y%m%d')
-        version_path = os.path.join(model_dir, f"model_{date_str}.pkl")
-        
-        metadata = {
-            'feature_columns': self.feature_columns,
-            'label_encoder': self.le,
-            'training_date': date_str,
-            'horizon': horizon,
-            'broker_mode': config['training']['broker_mode'],
-            'metrics': metrics
-        }
-        
-        joblib.dump((self.model, metadata), version_path)
-        logger.info(f"Saved versioned model to {version_path}")

@@ -1,3 +1,4 @@
+# src/processing/data_loader.py
 import pandas as pd
 import os
 import numpy as np
@@ -6,7 +7,7 @@ from src.utils.config_loader import load_config
 from src.utils.logger import get_logger
 
 config = load_config()
-logger = get_logger('data_loader')
+logger = get_logger('data_loader', config['logs']['log_dir'])
 
 def load_raw_data():
     """Load and concatenate all raw CSV files"""
@@ -35,10 +36,16 @@ def load_raw_data():
     
     # Data cleaning
     full_df = full_df.dropna(subset=['Symbol', 'Rate', 'Quantity'])
-    full_df['Quantity'] = full_df['Quantity'].astype(int)
+ # Clean Quantity column - remove commas and convert to int
+    def clean_quantity(value):
+        if isinstance(value, str):
+            return int(value.replace(',', ''))
+        return int(value)
+    
+    full_df['Quantity'] = full_df['Quantity'].apply(clean_quantity)
+    
+    # Clean Rate column
     full_df['Rate'] = full_df['Rate'].astype(float)
-    full_df = full_df[full_df['Quantity'] > 0]
-    full_df = full_df[full_df['Rate'] > 0]
     
     # Handle amount formatting
     if 'Amount' in full_df.columns:
